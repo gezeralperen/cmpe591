@@ -13,7 +13,7 @@ class Homework1Dataset(Dataset):
             tensor = torch.load(f'./hw1_data/{file}')
             if(file.startswith('actions')):
                 self.actions = torch.cat((self.actions, tensor))
-            if(file.startswith('imgs')):
+            if(file.startswith('states')):
                 self.images = torch.cat((self.images, tensor))
             if(file.startswith('positions')):
                 self.positions = torch.cat((self.positions, tensor))

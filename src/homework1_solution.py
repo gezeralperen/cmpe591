@@ -2,7 +2,7 @@ from utils.hw1 import *
 import torch
 
 BATCH_SIZE = 128
-EPOCHS = 60
+EPOCHS = 200
 
 device = torch.device('cuda')
 
