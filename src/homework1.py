@@ -3,9 +3,9 @@ from multiprocessing import Process
 import numpy as np
 import torch
 import torchvision.transforms as transforms
+import os
 
 import environment
-
 
 class Hw1Env(environment.BaseEnv):
     def __init__(self, **kwargs):
@@ -80,15 +80,17 @@ def collect(idx, N):
         actions[i] = action_id
         imgs[i] = pixels
         env.reset()
-    torch.save(positions, f"positions_{idx}.pt")
-    torch.save(actions, f"actions_{idx}.pt")
-    torch.save(imgs, f"imgs_{idx}.pt")
+    torch.save(positions, f"hw1_data/positions_{idx}.pt")
+    torch.save(actions, f"hw1_data/actions_{idx}.pt")
+    torch.save(imgs, f"hw1_data/imgs_{idx}.pt")
 
 
 if __name__ == "__main__":
     processes = []
-    for i in range(4):
-        p = Process(target=collect, args=(i, 100))
+    if os.path.exists('hw1_data') == False:
+        os.mkdir('hw1_data')
+    for i in range(16):
+        p = Process(target=collect, args=(i, 25))
         p.start()
         processes.append(p)
     for p in processes:
