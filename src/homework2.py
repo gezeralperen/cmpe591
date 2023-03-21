@@ -76,14 +76,16 @@ class Hw2Env(environment.BaseEnv):
     def step(self, action_id : int):
         state = self.state()
         action = self._actions[action_id] * self._delta
+        prevalue = self.reward()
         ee_pos = self.data.site(self._ee_site).xpos[:2]
         target_pos = np.concatenate([ee_pos, [1.06]])
         target_pos[:2] = np.clip(target_pos[:2] + action, [0.25, -0.3], [0.75, 0.3])
         self._set_ee_in_cartesian(target_pos, rotation=[-90, 0, 180], n_splits=30, threshold=0.04)
         self._t += 1
-
+    
+        postvalue = self.reward()
         next_state = self.state()
-        reward = self.reward()
+        reward = postvalue-prevalue
         terminal = self.is_terminal()
         truncated = self.is_truncated()
         return state, action_id, reward, next_state, (terminal or truncated)

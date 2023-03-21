@@ -12,9 +12,9 @@ import torch
 
 from utils.hw2.replay_buffer import ReplayBuffer
 
-INITIAL_TEMPERATURE = 100000
+INITIAL_TEMPERATURE = 500
 
-def startTraining(model: nn.Module, batch_size=32, gamma=0.99, device = torch.device):
+def startTraining(model: nn.Module, batch_size=128, gamma=0.99, device = torch.device):
     loss_fn = nn.MSELoss().to(device)
     optimizer = torch.optim.Adam(model.parameters())
     if os.path.exists('./models/hw2.pt'):
@@ -27,7 +27,7 @@ def startTraining(model: nn.Module, batch_size=32, gamma=0.99, device = torch.de
 
     rewards = deque(maxlen=100)
 
-    temperature = 100000
+    temperature = INITIAL_TEMPERATURE
 
     def updateModel(done: bool):
         if len(replay_buffer) > batch_size:
@@ -40,11 +40,11 @@ def startTraining(model: nn.Module, batch_size=32, gamma=0.99, device = torch.de
             optimizer.step()
         if(step % 10 == 0):
             target_model.load_state_dict(model.state_dict())
-            sys.stdout.write(f"Step: {step}\tReward: {np.mean(rewards):.5f}\tTemperature: {temperature:.1f}\r")
+            sys.stdout.write(f"Step: {step:4d}     Reward: {np.mean(rewards):.5f}     Temperature: {temperature:.1f}\r")
             sys.stdout.flush()
         if done and episode % 5 == 0:
             torch.save(model.state_dict(), './models/hw2.pt')
-            print(f"Episode: {episode}\tReward: {np.mean(rewards)}")
+            print(f"Episode: {episode}\tReward: {np.mean(rewards):.5f}                                        ")
    
     
     env = Hw2Env(n_actions=8, render_mode="gui")
@@ -61,6 +61,9 @@ def startTraining(model: nn.Module, batch_size=32, gamma=0.99, device = torch.de
             env.reset()
             state = env.state()
         step += 1
-        if(temperature > 1):
+        if(temperature > 0.1):
             temperature -= 0.1
-        updateModel(done)
+        for i in range(5):
+            updateModel(False)
+        if(done):
+            updateModel(True)
