@@ -48,7 +48,7 @@ class BaseEnv:
         self.model = mujoco.MjModel.from_xml_string(xml_string, assets=assets)
         self.data = mujoco.MjData(self.model)
         if self._render_mode == "gui":
-            self.viewer = mujoco_viewer.MujocoViewer(self.model, self.data)
+            self.viewer = mujoco_viewer.MujocoViewer(self.model, self.data, width=256, height=256, hide_menus=True)
             self.viewer.cam.fixedcamid = 0
             self.viewer.cam.type = 2
             self.viewer._render_every_frame = False

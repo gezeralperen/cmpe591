@@ -73,7 +73,8 @@ class Hw2Env(environment.BaseEnv):
     def is_truncated(self):
         return self._t >= self._max_timesteps
 
-    def step(self, action_id):
+    def step(self, action_id : int):
+        state = self.state()
         action = self._actions[action_id] * self._delta
         ee_pos = self.data.site(self._ee_site).xpos[:2]
         target_pos = np.concatenate([ee_pos, [1.06]])
@@ -81,25 +82,8 @@ class Hw2Env(environment.BaseEnv):
         self._set_ee_in_cartesian(target_pos, rotation=[-90, 0, 180], n_splits=30, threshold=0.04)
         self._t += 1
 
-        state = self.state()
+        next_state = self.state()
         reward = self.reward()
         terminal = self.is_terminal()
         truncated = self.is_truncated()
-        return state, reward, terminal, truncated
-
-
-if __name__ == "__main__":
-    N_ACTIONS = 8
-    env = Hw2Env(n_actions=N_ACTIONS, render_mode="gui")
-    for episode in range(10):
-        env.reset()
-        done = False
-        cum_reward = 0.0
-        start = time.time()
-        while not done:
-            action = np.random.randint(N_ACTIONS)
-            state, reward, is_terminal, is_truncated = env.step(action)
-            done = is_terminal or is_truncated
-            cum_reward += reward
-        end = time.time()
-        print(f"Episode={episode}, reward={cum_reward}, RF={env.data.time/(end-start):.2f}")
+        return state, action_id, reward, next_state, (terminal or truncated)
