@@ -63,7 +63,4 @@ def startTraining(model: nn.Module, batch_size=128, gamma=0.99, device = torch.d
         step += 1
         if(temperature > 0.1):
             temperature -= 0.1
-        for i in range(5):
-            updateModel(False)
-        if(done):
-            updateModel(True)
+        updateModel(done)
