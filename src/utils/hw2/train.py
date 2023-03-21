@@ -12,7 +12,6 @@ import torch
 
 from utils.hw2.replay_buffer import ReplayBuffer
 
-EXPLORATION_STEPS = 0
 INITIAL_TEMPERATURE = 100000
 
 def startTraining(model: nn.Module, batch_size=32, gamma=0.99, device = torch.device):
@@ -23,7 +22,6 @@ def startTraining(model: nn.Module, batch_size=32, gamma=0.99, device = torch.de
     target_model = copy.deepcopy(model).to(device)
     replay_buffer = ReplayBuffer(1000)
 
-    start = time.time()
     episode = 0
     step = 0
 
@@ -53,11 +51,8 @@ def startTraining(model: nn.Module, batch_size=32, gamma=0.99, device = torch.de
     env.reset()
     state = env.state()
     while True:
-        if(step > EXPLORATION_STEPS):
-            action_q_values = torch.softmax(model(state.unsqueeze(0).to(device))/temperature, dim=1).squeeze(0).detach().cpu().numpy()
-            action = np.random.choice(len(action_q_values), p=action_q_values)
-        else:
-            action = np.random.choice(8)
+        action_probs = torch.softmax(model(state.unsqueeze(0).to(device))/temperature, dim=1).squeeze(0).detach().cpu().numpy()
+        action = np.random.choice(len(action_probs), p=action_probs)
         state, action, reward, next_state,  done, = env.step(action)
         replay_buffer.push(state, action, reward, next_state, done)
         rewards.append(reward)
