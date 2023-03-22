@@ -85,7 +85,7 @@ class Hw2Env(environment.BaseEnv):
     
         postvalue = self.reward()
         next_state = self.state()
-        reward = postvalue-prevalue
+        reward = 1000*(postvalue-prevalue)
         terminal = self.is_terminal()
         truncated = self.is_truncated()
         return state, action_id, reward, next_state, (terminal or truncated)

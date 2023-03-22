@@ -38,7 +38,7 @@ def startTraining(model: nn.Module, batch_size=128, gamma=0.99, device = torch.d
             optimizer.zero_grad()
             loss.backward()
             optimizer.step()
-        if(step % 10 == 0):
+        if(step % 100 == 0):
             target_model.load_state_dict(model.state_dict())
             sys.stdout.write(f"Step: {step:4d}     Reward: {np.mean(rewards):.5f}     Temperature: {temperature:.1f}\r")
             sys.stdout.flush()
