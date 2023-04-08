@@ -47,6 +47,7 @@ class Hw3Env(environment.BaseEnv):
             pixels = transforms.functional.resize(pixels, (128, 128))
         return pixels / 255.0
 
+
     def high_level_state(self):
         ee_pos = self.data.site(self._ee_site).xpos[:2]
         obj_pos = self.data.body("obj1").xpos[:2]
@@ -71,7 +72,7 @@ class Hw3Env(environment.BaseEnv):
         return self._t >= self._max_timesteps
 
     def step(self, action):
-        action = action.clamp(-1, 1).cpu().numpy() * self._delta
+        action = action.clip(-1, 1) * self._delta
         ee_pos = self.data.site(self._ee_site).xpos[:2]
         target_pos = np.concatenate([ee_pos, [1.06]])
         target_pos[:2] = np.clip(target_pos[:2] + action, [0.25, -0.3], [0.75, 0.3])
